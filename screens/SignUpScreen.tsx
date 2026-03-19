@@ -3,11 +3,10 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView,
 import { Ionicons } from '@expo/vector-icons';
 
 const PREDEFINED_SKILLS = [
-  'AWS', 'Azure', 'C#', 'C++', 'Content Writing', 'Data Science', 'Design', 'Docker',
-  'Figma', 'Flutter', 'GCP', 'Go', 'GraphQL', 'Java', 'JavaScript', 'Kotlin',
-  'Kubernetes', 'Machine Learning', 'Marketing', 'MongoDB', 'Node.js', 'NoSQL',
-  'PHP', 'PostgreSQL', 'Python', 'REST API', 'React', 'React Native', 'Ruby',
-  'SEO', 'SQL', 'Sales', 'Swift', 'TypeScript', 'UI/UX'
+  'Auto Mechanic', 'Bricklaying', 'Carpentry', 'Cleaning', 'Cook/Chef',
+  'Dish Installation', 'Driving', 'Electrical works', 'HVAC Repair',
+  'Landscaping', 'Masonry', 'Painting', 'Pest Control', 'Plumbing',
+  'Roofing', 'Tiling', 'Welding'
 ];
 
 import { SafeAreaView } from 'react-native-safe-area-context';

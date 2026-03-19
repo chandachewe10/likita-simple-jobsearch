@@ -6,11 +6,10 @@ import { useData } from '../hooks/useData';
 import theme from '../lib/theme';
 
 const PREDEFINED_SKILLS = [
-  'AWS', 'Azure', 'C#', 'C++', 'Content Writing', 'Data Science', 'Design', 'Docker',
-  'Figma', 'Flutter', 'GCP', 'Go', 'GraphQL', 'Java', 'JavaScript', 'Kotlin',
-  'Kubernetes', 'Machine Learning', 'Marketing', 'MongoDB', 'Node.js', 'NoSQL',
-  'PHP', 'PostgreSQL', 'Python', 'REST API', 'React', 'React Native', 'Ruby',
-  'SEO', 'SQL', 'Sales', 'Swift', 'TypeScript', 'UI/UX'
+  'Auto Mechanic', 'Bricklaying', 'Carpentry', 'Cleaning', 'Cook/Chef',
+  'Dish Installation', 'Driving', 'Electrical works', 'HVAC Repair',
+  'Landscaping', 'Masonry', 'Painting', 'Pest Control', 'Plumbing',
+  'Roofing', 'Tiling', 'Welding'
 ];
 
 export default function PostJob({ navigation }: any) {
