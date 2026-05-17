@@ -95,7 +95,7 @@ export default function LandingScreen() {
           <View style={styles.logoMark}>
             <Text style={styles.logoIcon}>⚒️</Text>
           </View>
-          <Text style={styles.logoText}>KaziLink</Text>
+          <Text style={styles.logoText}>Likita</Text>
           <TouchableOpacity
             style={styles.signInChip}
             onPress={() => nav.navigate('Login')}
@@ -117,9 +117,7 @@ export default function LandingScreen() {
             style={{ opacity: heroFade, transform: [{ translateY: heroSlide }] }}
           >
             <Text style={styles.heroHeadline}>
-              Find skilled{'\n'}
-              <Text style={styles.heroAccent}>tradespeople</Text>
-              {'\n'}near you.
+              Find skilled tradespeople near you.
             </Text>
             <Text style={styles.heroSub}>
               Connecting Zambian artisans, technicians, and builders with the employers who need them — from Lusaka to Livingstone.
