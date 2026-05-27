@@ -2,10 +2,11 @@ import React from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useData } from '../hooks/useData';
+import AppHeader from '../components/AppHeader';
 import JobCard from '../components/JobCard';
 import theme from '../lib/theme';
 
-export default function EmployeeHome({ navigation }: any) {
+export default function EmployeeHome() {
   const { state, currentUser, applyToJob } = useData();
 
   const skills = currentUser?.skills || [];
@@ -30,13 +31,8 @@ export default function EmployeeHome({ navigation }: any) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Jobs for you</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile' as any)}>
-          <Text style={styles.link}>Profile</Text>
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <AppHeader showLogo title="Jobs for you" />
       <View style={styles.content}>
         {filtered.length === 0 ? (
           <View style={styles.empty}>
@@ -67,10 +63,7 @@ export default function EmployeeHome({ navigation }: any) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
-  header: { padding: theme.spacing.md, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { fontSize: 22, fontWeight: '700' },
-  link: { color: theme.colors.primary },
-  content: { paddingHorizontal: theme.spacing.md },
+  content: { flex: 1, paddingHorizontal: theme.spacing.md },
   empty: { padding: theme.spacing.lg, alignItems: 'center' },
   muted: { color: theme.colors.muted },
 });

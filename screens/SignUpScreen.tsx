@@ -12,6 +12,8 @@ const PREDEFINED_SKILLS = [
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useData } from '../hooks/useData';
+import AppHeader from '../components/AppHeader';
+import LikitaLogo from '../components/LikitaLogo';
 import theme from '../lib/theme';
 
 export default function SignUpScreen() {
@@ -45,9 +47,12 @@ export default function SignUpScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <AppHeader showBack title="Create account" />
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
       <View style={styles.content}>
-        <Text style={styles.title}>Create account</Text>
+        <LikitaLogo size="md" style={styles.logo} />
+        <Text style={styles.title}>Join Likita</Text>
         <Text style={styles.subtitle}>Choose role and enter details</Text>
         <View style={{ flexDirection: 'row', marginTop: 8 }}>
           <TouchableOpacity onPress={() => setRole('employee')} style={[styles.roleBtn, role === 'employee' && styles.roleActive]}>
@@ -139,13 +144,17 @@ export default function SignUpScreen() {
           </TouchableOpacity>
         </View>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
-  content: { padding: theme.spacing.md, marginTop: theme.spacing.lg },
+  scroll: { flex: 1 },
+  scrollContent: { paddingBottom: 32, flexGrow: 1 },
+  content: { padding: theme.spacing.md, marginTop: theme.spacing.md },
+  logo: { marginBottom: 16 },
   title: { fontSize: 26, fontWeight: '700', color: theme.colors.text },
   subtitle: { color: theme.colors.muted, marginTop: 6, marginBottom: 12 },
   roleBtn: { padding: 10, borderRadius: theme.radii.sm, backgroundColor: theme.colors.surfaceVariant, marginRight: 12 },

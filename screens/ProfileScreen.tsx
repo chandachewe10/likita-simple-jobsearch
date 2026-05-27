@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import MapPicker from '../components/MapPicker';
+import AppHeader from '../components/AppHeader';
 import { useData } from '../hooks/useData';
 import theme from '../lib/theme';
 
@@ -51,10 +52,9 @@ export default function ProfileScreen() {
   if (!currentUser) return null;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Your Profile</Text>
-        <Text style={styles.subtitle}>Update your contact info and documents</Text>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <AppHeader showLogo title="Your Profile" subtitle="Contact info & documents" />
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
 
         <TextInput placeholder="Phone Number" value={phone} onChangeText={setPhone} style={styles.input} keyboardType="phone-pad" />
         <TextInput placeholder="Address" value={address} onChangeText={setAddress} style={styles.input} />
@@ -175,9 +175,8 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
-  content: { padding: theme.spacing.md },
-  title: { fontSize: 26, fontWeight: '700', color: theme.colors.text },
-  subtitle: { color: theme.colors.muted, marginTop: 6, marginBottom: 16 },
+  scroll: { flex: 1 },
+  content: { padding: theme.spacing.md, paddingBottom: 40, flexGrow: 1 },
   input: { backgroundColor: theme.colors.surface, padding: 12, borderRadius: theme.radii.sm, marginTop: 12, borderWidth: 1, borderColor: theme.colors.surfaceVariant },
   mapBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.surfaceVariant, padding: 12, borderRadius: theme.radii.sm, marginTop: 12, borderWidth: 1, borderColor: theme.colors.outline },
   mapBtnText: { color: theme.colors.primary, marginLeft: 8, fontWeight: '600' },

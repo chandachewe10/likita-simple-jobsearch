@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AppHeader from '../components/AppHeader';
 import { useData } from '../hooks/useData';
 import theme from '../lib/theme';
 import StarRating from '../components/StarRating';
@@ -8,6 +9,7 @@ import StarRating from '../components/StarRating';
 export default function ApplicantsScreen({ route }: any) {
   const { jobId } = route.params;
   const { state, rateApplication } = useData();
+  const job = state.jobs.find((j) => j.id === jobId);
   const apps = state.applications.filter((a) => a.jobId === jobId);
 
   const [localRating, setLocalRating] = useState<Record<string, number>>({});
@@ -24,7 +26,8 @@ export default function ApplicantsScreen({ route }: any) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <AppHeader title="Applicants" subtitle={job?.title} showBack />
       <View style={styles.content}>
         {apps.length === 0 ? (
           <View style={{ padding: 16 }}><Text style={styles.muted}>No applicants yet.</Text></View>
@@ -56,7 +59,7 @@ export default function ApplicantsScreen({ route }: any) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
-  content: { padding: theme.spacing.md },
+  content: { flex: 1, padding: theme.spacing.md },
   muted: { color: theme.colors.muted },
   card: { backgroundColor: theme.colors.surface, padding: 12, borderRadius: theme.radii.md, marginBottom: theme.spacing.md },
   name: { fontWeight: '700' },

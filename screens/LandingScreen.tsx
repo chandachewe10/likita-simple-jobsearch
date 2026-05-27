@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import LikitaLogo from '../components/LikitaLogo';
 import theme from '../lib/theme';
 
 const { width } = Dimensions.get('window');
@@ -84,7 +85,7 @@ export default function LandingScreen() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" />
       <ScrollView
         contentContainerStyle={styles.scroll}
@@ -92,10 +93,7 @@ export default function LandingScreen() {
       >
         {/* Header bar */}
         <View style={styles.topBar}>
-          <View style={styles.logoMark}>
-            <Text style={styles.logoIcon}>⚒️</Text>
-          </View>
-          <Text style={styles.logoText}>Likita</Text>
+          <LikitaLogo size="lg" style={styles.logoFlex} />
           <TouchableOpacity
             style={styles.signInChip}
             onPress={() => nav.navigate('Login')}
@@ -187,7 +185,7 @@ export default function LandingScreen() {
         {/* Footer nudge */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            Join thousands of tradespeople already on KaziLink.
+            Join thousands of tradespeople already on Likita.
           </Text>
           <TouchableOpacity onPress={() => nav.navigate('SignUp')}>
             <Text style={styles.footerLink}>Create your free account →</Text>
@@ -212,24 +210,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: theme.spacing.md,
-    paddingVertical: 12,
+    paddingVertical: 16,
   },
-  logoMark: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: theme.colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 8,
-  },
-  logoIcon: { fontSize: 16 },
-  logoText: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: theme.colors.text,
+  logoFlex: {
     flex: 1,
-    letterSpacing: -0.5,
   },
   signInChip: {
     paddingHorizontal: 14,

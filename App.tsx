@@ -2,8 +2,9 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { DataProvider, useData } from './hooks/useData';
 import LandingScreen from './screens/LandingScreen';
 import LoginScreen from './screens/LoginScreen';
@@ -14,13 +15,20 @@ import PostJob from './screens/PostJob';
 import ApplicantsScreen from './screens/ApplicantsScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import theme from './lib/theme';
+import { linking } from './lib/linking';
+import { useWebLayout } from './lib/setupWebLayout';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+const stackScreenOptions = {
+  headerShown: false,
+  contentStyle: { flex: 1, backgroundColor: theme.colors.background },
+};
+
 function EmployeeStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={stackScreenOptions}>
       <Stack.Screen name="EmployeeHome" component={EmployeeHome} />
     </Stack.Navigator>
   );
@@ -28,7 +36,7 @@ function EmployeeStack() {
 
 function EmployerStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={stackScreenOptions}>
       <Stack.Screen name="EmployerHome" component={EmployerHome} />
       <Stack.Screen name="PostJob" component={PostJob} />
       <Stack.Screen name="Applicants" component={ApplicantsScreen} />
@@ -38,8 +46,7 @@ function EmployerStack() {
 
 function AuthStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* Landing is the default unauthenticated screen */}
+    <Stack.Navigator screenOptions={stackScreenOptions}>
       <Stack.Screen name="Landing" component={LandingScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
@@ -47,10 +54,41 @@ function AuthStack() {
   );
 }
 
+const tabScreenOptions = ({ route }: { route: { name: string } }) => ({
+  headerShown: false,
+  tabBarActiveTintColor: theme.colors.primary,
+  tabBarInactiveTintColor: theme.colors.muted,
+  tabBarLabelStyle: {
+    fontSize: 12,
+    fontWeight: '600' as const,
+    marginBottom: Platform.OS === 'ios' ? 0 : 4,
+  },
+  sceneContainerStyle: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  tabBarStyle: {
+    backgroundColor: theme.colors.surface,
+    borderTopColor: theme.colors.surfaceVariant,
+    borderTopWidth: 1,
+    paddingTop: 6,
+    elevation: 0,
+  },
+  tabBarIcon: ({ focused, color, size }: { focused: boolean; color: string; size: number }) => {
+    let iconName: keyof typeof Ionicons.glyphMap = 'briefcase-outline';
+    if (route.name === 'Jobs') {
+      iconName = focused ? 'briefcase' : 'briefcase-outline';
+    } else if (route.name === 'Profile') {
+      iconName = focused ? 'person' : 'person-outline';
+    }
+    return <Ionicons name={iconName} size={size} color={color} />;
+  },
+});
+
 function RootNavigation() {
   const { currentUser, loading } = useData();
 
-  if (loading) return null; // or a splash
+  if (loading) return null;
 
   if (!currentUser) {
     return <AuthStack />;
@@ -58,31 +96,56 @@ function RootNavigation() {
 
   if (currentUser.role === 'employee') {
     return (
-      <Tab.Navigator screenOptions={{ headerShown: false }}>
-        <Tab.Screen name="Jobs" component={EmployeeStack} />
-        <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Navigator screenOptions={tabScreenOptions}>
+        <Tab.Screen name="Jobs" component={EmployeeStack} options={{ title: 'Jobs' }} />
+        <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
       </Tab.Navigator>
     );
   }
 
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="Jobs" component={EmployerStack} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+    <Tab.Navigator screenOptions={tabScreenOptions}>
+      <Tab.Screen name="Jobs" component={EmployerStack} options={{ title: 'My Jobs' }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
     </Tab.Navigator>
   );
 }
 
 export default function App() {
+  useWebLayout();
+
   return (
-    <SafeAreaProvider style={styles.container}>
-      <DataProvider>
-        <NavigationContainer>
-          <RootNavigation />
-        </NavigationContainer>
-      </DataProvider>
+    <SafeAreaProvider style={styles.safeRoot}>
+      <View style={styles.frame}>
+        <DataProvider>
+          <View style={styles.navHost}>
+            <NavigationContainer linking={linking}>
+              <RootNavigation />
+            </NavigationContainer>
+          </View>
+        </DataProvider>
+      </View>
     </SafeAreaProvider>
   );
 }
 
-const styles = StyleSheet.create({ container: { flex: 1 } });
+const styles = StyleSheet.create({
+  safeRoot: {
+    flex: 1,
+    width: '100%',
+    backgroundColor: theme.colors.background,
+    ...Platform.select({
+      web: { minHeight: '100vh' as unknown as number },
+      default: {},
+    }),
+  },
+  frame: {
+    flex: 1,
+    width: '100%',
+  },
+  navHost: {
+    flex: 1,
+    width: '100%',
+    minHeight: 0,
+  },
+});

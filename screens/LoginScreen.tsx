@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useData } from '../hooks/useData';
+import AppHeader from '../components/AppHeader';
+import LikitaLogo from '../components/LikitaLogo';
 import theme from '../lib/theme';
 
 export default function LoginScreen() {
@@ -26,8 +28,10 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <AppHeader showBack title="Sign in" onBack={() => nav.navigate('Landing')} />
       <View style={styles.content}>
+        <LikitaLogo size="md" style={styles.logo} />
         <Text style={styles.title}>Welcome back</Text>
         <Text style={styles.subtitle}>Sign in to access your account</Text>
         <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} keyboardType="email-address" autoCapitalize="none" />
@@ -51,7 +55,8 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
-  content: { padding: theme.spacing.md, marginTop: theme.spacing.lg },
+  content: { padding: theme.spacing.md, marginTop: theme.spacing.md },
+  logo: { marginBottom: 20 },
   title: { fontSize: 28, fontWeight: '700', color: theme.colors.text },
   subtitle: { color: theme.colors.muted, marginTop: 6, marginBottom: 16 },
   input: { backgroundColor: theme.colors.surface, padding: 12, borderRadius: theme.radii.sm, marginTop: 12, borderWidth: 1, borderColor: theme.colors.surfaceVariant },

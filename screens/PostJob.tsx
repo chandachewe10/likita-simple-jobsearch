@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Modal, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AppHeader from '../components/AppHeader';
 import { useData } from '../hooks/useData';
 import theme from '../lib/theme';
 
@@ -39,9 +40,9 @@ export default function PostJob({ navigation }: any) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Post a new job</Text>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <AppHeader title="Post a new job" showBack />
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <TextInput placeholder="Job title" value={title} onChangeText={setTitle} style={styles.input} />
         <TextInput placeholder="Description" value={description} onChangeText={setDescription} style={[styles.input, { height: 120, textAlignVertical: 'top' }]} multiline />
         
@@ -116,15 +117,15 @@ export default function PostJob({ navigation }: any) {
         <TouchableOpacity style={styles.primary} onPress={handlePost} disabled={loading}>
           <Text style={styles.primaryText}>{loading ? 'Posting...' : 'Post job'}</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
-  content: { padding: theme.spacing.md },
-  title: { fontSize: 20, fontWeight: '700', marginBottom: 8 },
+  scroll: { flex: 1 },
+  content: { padding: theme.spacing.md, paddingBottom: 32, flexGrow: 1 },
   input: { backgroundColor: theme.colors.surface, padding: 12, borderRadius: theme.radii.sm, marginTop: 12, borderWidth: 1, borderColor: theme.colors.surfaceVariant },
   skillsContainer: { marginTop: 12 },
   dropdownToggle: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: theme.colors.surface, padding: 12, borderRadius: theme.radii.sm, borderWidth: 1, borderColor: theme.colors.surfaceVariant },
