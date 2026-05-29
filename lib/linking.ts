@@ -1,7 +1,7 @@
 import { LinkingOptions } from '@react-navigation/native';
 
 export const linking: LinkingOptions<object> = {
-  prefixes: ['/'],
+  prefixes: [typeof window !== 'undefined' ? window.location.origin : '/', '/'],
   config: {
     screens: {
       Landing: '',
@@ -9,8 +9,10 @@ export const linking: LinkingOptions<object> = {
       SignUp: 'signup',
       Jobs: {
         screens: {
-          EmployerHome: 'employer',
           EmployeeHome: 'jobs',
+          ApplyJob: 'jobs/apply/:jobId',
+          EmployerHome: 'employer',
+          FindWorkers: 'employer/find-workers',
           PostJob: 'employer/post',
           Applicants: 'employer/applicants/:jobId',
         },

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { User, Job, Application } from '../types';
+import { User, Job, Application, AiReview } from '../types';
+import { MAX_RESUME_STORAGE_CHARS } from '../lib/resume';
 import { v4 as uuidv4 } from 'uuid';
 
 type DataState = {
@@ -17,7 +18,17 @@ type DataContextValue = {
   login: (email: string, password: string) => Promise<User | null>;
   logout: () => void;
   postJob: (job: Omit<Job, 'id' | 'createdAt'>) => Promise<Job>;
-  applyToJob: (jobId: string, employeeId: string, coverLetter?: string) => Promise<Application>;
+  applyToJob: (
+    jobId: string,
+    employeeId: string,
+    options?: {
+      coverLetter?: string;
+      yearsOfExperience?: number;
+      resumeUri?: string;
+      resumeFileName?: string;
+    }
+  ) => Promise<Application>;
+  saveApplicationAiReview: (applicationId: string, review: AiReview) => Promise<void>;
   rateApplication: (applicationId: string, rating: number) => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<User>;
 };
@@ -46,6 +57,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
             email: 'employer@acme.test',
             password: 'password',
             role: 'employer',
+            location: { latitude: -15.3875, longitude: 28.3228 },
+            address: 'Cairo Road, Lusaka',
           };
           const employee: User = {
             id: uuidv4(),
@@ -53,18 +66,36 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
             email: 'jane@doe.test',
             password: 'password',
             role: 'employee',
-            skills: ['javascript', 'react', 'design'],
+            skills: ['Plumbing', 'Electrical works'],
             rating: 4.5,
+            phone: '+260 97 123 4567',
+            address: '123 Cairo Road, Lusaka',
+            nrc: '123456/78/1',
+            qualifications: 'Licensed Plumber',
+            location: { latitude: -15.392, longitude: 28.318 },
+          };
+          const employee2: User = {
+            id: uuidv4(),
+            name: 'John Banda',
+            email: 'john@banda.test',
+            password: 'password',
+            role: 'employee',
+            skills: ['Carpentry', 'Roofing', 'Painting'],
+            rating: 3.8,
+            phone: '+260 96 987 6543',
+            address: 'Kabulonga, Lusaka',
+            qualifications: 'Trade Certificate in Carpentry',
+            location: { latitude: -15.41, longitude: 28.35 },
           };
           const job: Job = {
             id: uuidv4(),
-            title: 'Frontend Contractor',
-            description: 'Build a small React app UI',
-            skillsRequired: ['react', 'javascript'],
+            title: 'Plumber needed',
+            description: 'Fix kitchen pipes and install new taps',
+            skillsRequired: ['Plumbing'],
             employerId: employer.id,
             createdAt: Date.now(),
           };
-          const init = { users: [employer, employee], jobs: [job], applications: [] };
+          const init = { users: [employer, employee, employee2], jobs: [job], applications: [] };
           setState(init);
           await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(init));
         }
@@ -82,8 +113,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
-    // persist state
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state)).catch((e) => console.warn(e));
+    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state)).catch((e) => {
+      console.warn('Failed to persist app data', e);
+    });
   }, [state]);
 
   useEffect(() => {
@@ -134,19 +166,47 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return job;
   };
 
-  const applyToJob = async (jobId: string, employeeId: string, coverLetter?: string) => {
+  const applyToJob = async (
+    jobId: string,
+    employeeId: string,
+    options?: {
+      coverLetter?: string;
+      yearsOfExperience?: number;
+      resumeUri?: string;
+      resumeFileName?: string;
+    }
+  ) => {
     const already = state.applications.find((a) => a.jobId === jobId && a.employeeId === employeeId);
     if (already) throw new Error('Already applied');
+    if (options?.resumeUri && options.resumeUri.length > MAX_RESUME_STORAGE_CHARS) {
+      throw new Error('Resume is too large to save. Please use a file under 2 MB.');
+    }
+    const years = options?.yearsOfExperience;
+    if (years == null || Number.isNaN(years) || years < 0) {
+      throw new Error('Please enter years of experience');
+    }
     const application: Application = {
       id: uuidv4(),
       jobId,
       employeeId,
-      coverLetter,
+      coverLetter: options?.coverLetter?.trim() || undefined,
+      yearsOfExperience: years,
+      resumeUri: options?.resumeUri,
+      resumeFileName: options?.resumeFileName,
       status: 'applied',
       appliedAt: Date.now(),
     };
     setState((s) => ({ ...s, applications: [application, ...s.applications] }));
     return application;
+  };
+
+  const saveApplicationAiReview = async (applicationId: string, review: AiReview) => {
+    setState((s) => ({
+      ...s,
+      applications: s.applications.map((a) =>
+        a.id === applicationId ? { ...a, aiReview: review } : a
+      ),
+    }));
   };
 
   const rateApplication = async (applicationId: string, rating: number) => {
@@ -172,6 +232,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logout,
     postJob,
     applyToJob,
+    saveApplicationAiReview,
     rateApplication,
     updateProfile,
   };

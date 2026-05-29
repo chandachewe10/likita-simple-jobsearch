@@ -1,33 +1,19 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useData } from '../hooks/useData';
 import AppHeader from '../components/AppHeader';
 import JobCard from '../components/JobCard';
 import theme from '../lib/theme';
 
-export default function EmployeeHome() {
-  const { state, currentUser, applyToJob } = useData();
+export default function EmployeeHome({ navigation }: any) {
+  const { state, currentUser } = useData();
 
   const skills = currentUser?.skills || [];
   const filtered = state.jobs.filter((j) => j.skillsRequired.some((s) => skills.includes(s)));
 
   const hasApplied = (jobId: string) => {
     return state.applications.some(a => a.jobId === jobId && a.employeeId === currentUser?.id);
-  };
-
-  const [applyingId, setApplyingId] = React.useState<string | null>(null);
-
-  const handleApply = async (jobId: string) => {
-    setApplyingId(jobId);
-    try {
-      await applyToJob(jobId, currentUser!.id);
-      // The UI automatically updates to "✅ Applied!" - no alert required natively.
-    } catch (e: any) {
-      Alert.alert('Error', e.message || 'Could not apply');
-    } finally {
-      setApplyingId(null);
-    }
   };
 
   return (
@@ -44,13 +30,13 @@ export default function EmployeeHome() {
             keyExtractor={(i) => i.id} 
             renderItem={({ item }) => {
               const applied = hasApplied(item.id);
-              const label = applied ? "✅ Applied" : applyingId === item.id ? "Applying..." : "Apply";
+              const label = applied ? "✅ Applied" : "Apply";
               return (
                 <JobCard 
                   job={item} 
-                  onPress={() => handleApply(item.id)} 
+                  onPress={() => applied ? undefined : navigation.navigate('ApplyJob', { jobId: item.id })} 
                   actionLabel={label} 
-                  disabled={applied || applyingId === item.id}
+                  disabled={applied}
                 />
               );
             }} 

@@ -27,11 +27,23 @@ export type Job = {
   createdAt: number;
 };
 
+export type AiReviewRecommendation = 'strong' | 'moderate' | 'weak';
+
+export type AiReview = {
+  recommendation: AiReviewRecommendation;
+  summary: string;
+  generatedAt: number;
+};
+
 export type Application = {
   id: string;
   jobId: string;
   employeeId: string;
   coverLetter?: string;
+  yearsOfExperience?: number;
+  resumeUri?: string;
+  resumeFileName?: string;
+  aiReview?: AiReview;
   status: 'applied' | 'accepted' | 'completed' | 'rejected';
   rating?: number; // rating given by employer after completion
   appliedAt: number;

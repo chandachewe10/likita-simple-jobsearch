@@ -13,6 +13,8 @@ import EmployeeHome from './screens/EmployeeHome';
 import EmployerHome from './screens/EmployerHome';
 import PostJob from './screens/PostJob';
 import ApplicantsScreen from './screens/ApplicantsScreen';
+import FindWorkersScreen from './screens/FindWorkersScreen';
+import ApplyJobScreen from './screens/ApplyJobScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import theme from './lib/theme';
 import { linking } from './lib/linking';
@@ -30,6 +32,7 @@ function EmployeeStack() {
   return (
     <Stack.Navigator screenOptions={stackScreenOptions}>
       <Stack.Screen name="EmployeeHome" component={EmployeeHome} />
+      <Stack.Screen name="ApplyJob" component={ApplyJobScreen} />
     </Stack.Navigator>
   );
 }
@@ -38,6 +41,7 @@ function EmployerStack() {
   return (
     <Stack.Navigator screenOptions={stackScreenOptions}>
       <Stack.Screen name="EmployerHome" component={EmployerHome} />
+      <Stack.Screen name="FindWorkers" component={FindWorkersScreen} />
       <Stack.Screen name="PostJob" component={PostJob} />
       <Stack.Screen name="Applicants" component={ApplicantsScreen} />
     </Stack.Navigator>
