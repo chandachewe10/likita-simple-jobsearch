@@ -126,8 +126,13 @@ async function handleSmsRequest(body) {
   if (!numbers || !message) throw new Error('numbers and message are required.');
 
   const token = process.env.SWIFTSMS_TOKEN;
-  const senderId = process.env.SWIFTSMS_SENDER_ID || 'LIKITA';
+  const senderId = process.env.SWIFTSMS_SENDER_ID?.trim();
   if (!token) throw new Error('SWIFTSMS_TOKEN is not configured in .env');
+  if (!senderId) {
+    throw new Error(
+      'SWIFTSMS_SENDER_ID is not configured in .env. Use your approved sender ID from the SwiftSMS dashboard.'
+    );
+  }
 
   const { data } = await sendSwiftSms({ token, senderId, numbers, message });
   return { success: true, data };

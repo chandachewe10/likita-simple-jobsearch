@@ -34,7 +34,14 @@ export async function sendSms(numbers: string, message: string): Promise<void> {
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(data.error || `SMS failed (${response.status}).`);
+    const validation =
+      data.details?.errors &&
+      typeof data.details.errors === 'object' &&
+      Object.entries(data.details.errors)
+        .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
+        .join('; ');
+    const msg = [data.error, validation].filter(Boolean).join(' — ');
+    throw new Error(msg || `SMS failed (${response.status}).`);
   }
 }
 

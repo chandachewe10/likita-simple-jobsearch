@@ -11,7 +11,7 @@ import PaymentModal from '../components/PaymentModal';
 import { openResume } from '../lib/resume';
 import { sendSms, buildAcceptanceMessage } from '../lib/messaging';
 import { collectMobileMoney } from '../lib/payments';
-import { normalizeZmPhone, formatLencoPhone } from '../lib/phone';
+import { formatLencoPhone, formatSwiftSmsPhone } from '../lib/phone';
 import { Application } from '../types';
 
 function formatDate(ts: number) {
@@ -96,7 +96,7 @@ export default function ApplicantsScreen({ route }: any) {
       if (phone?.trim()) {
         try {
           await sendSms(
-            normalizeZmPhone(phone),
+            formatSwiftSmsPhone(phone),
             buildAcceptanceMessage(applicantName, job.title)
           );
           Alert.alert('Accepted', 'Applicant accepted and SMS notification sent.');

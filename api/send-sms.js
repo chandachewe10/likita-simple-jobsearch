@@ -20,9 +20,15 @@ module.exports = async function handler(req, res) {
     }
 
     const token = process.env.SWIFTSMS_TOKEN;
-    const senderId = process.env.SWIFTSMS_SENDER_ID || 'LIKITA';
+    const senderId = process.env.SWIFTSMS_SENDER_ID?.trim();
     if (!token) {
       return res.status(500).json({ error: 'SWIFTSMS_TOKEN is not configured on the server.' });
+    }
+    if (!senderId) {
+      return res.status(500).json({
+        error:
+          'SWIFTSMS_SENDER_ID is not configured. Set it in Vercel (or .env) to your approved sender ID from the SwiftSMS dashboard.',
+      });
     }
 
     const { data } = await sendSwiftSms({
