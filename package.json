@@ -10,7 +10,8 @@
     "ios": "npx expo run:ios",
     "web": "npx concurrently -k \"node scripts/dev-api-server.mjs\" \"npx expo start --web --port 8082\"",
     "web:expo-only": "npx expo start --web --port 8082",
-    "api:dev": "node scripts/dev-api-server.mjs"
+    "api:dev": "node scripts/dev-api-server.mjs",
+    "test:sms": "node scripts/test-swiftsms.mjs"
   },
   "dependencies": {
     "@expo/metro-runtime": "^55.0.6",

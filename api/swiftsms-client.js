@@ -20,7 +20,7 @@ function formatSwiftSmsNumbers(numbers) {
     .join(',');
 }
 
-function formatSwiftSmsError(data, status) {
+function formatSwiftSmsError(data, status, senderId) {
   const parts = [];
   if (data?.message) parts.push(data.message);
   if (data?.errors && typeof data.errors === 'object') {
@@ -29,7 +29,15 @@ function formatSwiftSmsError(data, status) {
       parts.push(`${field}: ${text}`);
     }
   }
-  return parts.join(' — ') || `SwiftSMS failed (${status}).`;
+  const base = parts.join(' — ') || `SwiftSMS failed (${status}).`;
+  if (
+    status === 422 &&
+    /invalid sender/i.test(base) &&
+    senderId
+  ) {
+    return `${base} (sender_id "${senderId}" is not enabled for your API token — register it in the SwiftSMS dashboard or use an approved sender.)`;
+  }
+  return base;
 }
 
 /**
@@ -74,7 +82,7 @@ function sendSwiftSms({ token, senderId, numbers, message }) {
             resolve({ status, data });
             return;
           }
-          const err = new Error(formatSwiftSmsError(data, status));
+          const err = new Error(formatSwiftSmsError(data, status, senderId));
           err.status = status;
           err.details = data;
           reject(err);
