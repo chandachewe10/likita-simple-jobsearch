@@ -16,6 +16,7 @@ export type User = {
     latitude: number;
     longitude: number;
   };
+  profileComplete?: boolean;
 };
 
 export type Job = {
@@ -46,5 +47,9 @@ export type Application = {
   aiReview?: AiReview;
   status: 'applied' | 'accepted' | 'completed' | 'rejected';
   rating?: number; // rating given by employer after completion
+  paymentReference?: string;
+  paymentPhone?: string;
+  paymentStatus?: 'pending' | 'paid' | 'failed';
+  paidAt?: number;
   appliedAt: number;
 };

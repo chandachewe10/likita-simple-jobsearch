@@ -1,0 +1,359 @@
+{
+  "info": {
+    "_postman_id": "a566b1db-87a7-4a7d-a41f-27f6c156ac9f",
+    "name": "Lenco",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "17038479"
+  },
+  "item": [
+    {
+      "name": "collections",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "d12aba6449253ed16ead5b9871b6f6c8954e1874f33337c4dc79c779db1a3f7d",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": " {\r\n\"operator\":\"airtel\",\r\n \"phone\":\"0973750029\",\r\n \"amount\":\"2\",\r\n \"reference\":\"51994455511\",\r\n \"bearer\":\"customer\"\r\n }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.lenco.co/access/v2/collections/mobile-money",
+          "protocol": "https",
+          "host": [
+            "api",
+            "lenco",
+            "co"
+          ],
+          "path": [
+            "access",
+            "v2",
+            "collections",
+            "mobile-money"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "reference",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "59c07733595a11127c6705dce730a1830d6bc2f8eaf98848ef65bd8dc9648346",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://api.lenco.co/access/v2/collections/status/5110008606311",
+          "protocol": "https",
+          "host": [
+            "api",
+            "lenco",
+            "co"
+          ],
+          "path": [
+            "access",
+            "v2",
+            "collections",
+            "status",
+            "5110008606311"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "vendors",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "59c07733595a11127c6705dce730a1830d6bc2f8eaf98848ef65bd8dc9648346",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": " Bearer 59c07733595a11127c6705dce730a1830d6bc2f8eaf98848ef65bd8dc9648346",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://api.lenco.co/access/v1/bills/vendors",
+          "protocol": "https",
+          "host": [
+            "api",
+            "lenco",
+            "co"
+          ],
+          "path": [
+            "access",
+            "v1",
+            "bills",
+            "vendors"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SendToMobile",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "e843c14953afe4d4cb0592b85941fbc816e3c9a94d8054bd7619e822c86dab97",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"accountId\": \"58a5b073-15ed-4ddb-996b-21224488edf6\",\r\n  \"amount\": 5,\r\n  \"narration\": \"conversions\",\r\n  \"reference\": \"38484929293\",\r\n  \"transferRecipientId\": \"\",\r\n  \"phone\": \"0973750029\",\r\n  \"operator\": \"airtel\",\r\n  \"country\": \"zm\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.lenco.co/access/v2/transfers/mobile-money",
+          "protocol": "https",
+          "host": [
+            "api",
+            "lenco",
+            "co"
+          ],
+          "path": [
+            "access",
+            "v2",
+            "transfers",
+            "mobile-money"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Account",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "e843c14953afe4d4cb0592b85941fbc816e3c9a94d8054bd7619e822c86dab97",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://api.lenco.co/access/v2/accounts?page=1",
+          "protocol": "https",
+          "host": [
+            "api",
+            "lenco",
+            "co"
+          ],
+          "path": [
+            "access",
+            "v2",
+            "accounts"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Banks",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "e843c14953afe4d4cb0592b85941fbc816e3c9a94d8054bd7619e822c86dab97",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://api.lenco.co/access/v2/banks",
+          "protocol": "https",
+          "host": [
+            "api",
+            "lenco",
+            "co"
+          ],
+          "path": [
+            "access",
+            "v2",
+            "banks"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SendToBank",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"accountId\": \"58a5b073-15ed-4ddb-996b-21224488edf6\",\r\n  \"amount\": 6,\r\n  \"narration\": \"conversions\",\r\n  \"reference\": \"3848499384848493\",\r\n  \"transferRecipientId\": \"\",\r\n  \"accountNumber\": \"0104143267300\",\r\n  \"bankId\": \"017\",\r\n  \"country\": \"zm\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.lenco.co/access/v2/transfers/bank-account",
+          "protocol": "https",
+          "host": [
+            "api",
+            "lenco",
+            "co"
+          ],
+          "path": [
+            "access",
+            "v2",
+            "transfers",
+            "bank-account"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "AccountBalance",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "e843c14953afe4d4cb0592b85941fbc816e3c9a94d8054bd7619e822c86dab97",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://api.lenco.co/access/v2/accounts/58a5b073-15ed-4ddb-996b-21224488edf6/balance",
+          "protocol": "https",
+          "host": [
+            "api",
+            "lenco",
+            "co"
+          ],
+          "path": [
+            "access",
+            "v2",
+            "accounts",
+            "58a5b073-15ed-4ddb-996b-21224488edf6",
+            "balance"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

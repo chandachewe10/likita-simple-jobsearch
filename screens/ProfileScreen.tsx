@@ -6,6 +6,7 @@ import MapPicker from '../components/MapPicker';
 import AppHeader from '../components/AppHeader';
 import { useData } from '../hooks/useData';
 import theme from '../lib/theme';
+import { isProfileComplete, profileMissingFields } from '../lib/profile';
 
 const PREDEFINED_SKILLS = [
   'Auto Mechanic', 'Bricklaying', 'Carpentry', 'Cleaning', 'Cook/Chef',
@@ -51,10 +52,24 @@ export default function ProfileScreen() {
 
   if (!currentUser) return null;
 
+  const complete = isProfileComplete(currentUser);
+  const missing = profileMissingFields(currentUser);
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <AppHeader showLogo title="Your Profile" subtitle="Contact info & documents" />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+
+        {!complete ? (
+          <View style={styles.setupBanner}>
+            <Text style={styles.setupTitle}>Complete your profile</Text>
+            <Text style={styles.setupText}>
+              {currentUser.role === 'employee'
+                ? `Add your ${missing.join(' and ')} before applying for jobs.`
+                : `Add your ${missing.join(' and ')} to get the most from Likita.`}
+            </Text>
+          </View>
+        ) : null}
 
         <TextInput placeholder="Phone Number" value={phone} onChangeText={setPhone} style={styles.input} keyboardType="phone-pad" />
         <TextInput placeholder="Address" value={address} onChangeText={setAddress} style={styles.input} />
@@ -177,6 +192,16 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   scroll: { flex: 1 },
   content: { padding: theme.spacing.md, paddingBottom: 40, flexGrow: 1 },
+  setupBanner: {
+    backgroundColor: '#EFF6FF',
+    padding: 14,
+    borderRadius: theme.radii.sm,
+    marginBottom: 4,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+  },
+  setupTitle: { fontSize: 15, fontWeight: '700', color: theme.colors.text },
+  setupText: { fontSize: 13, color: theme.colors.muted, marginTop: 4, lineHeight: 18 },
   input: { backgroundColor: theme.colors.surface, padding: 12, borderRadius: theme.radii.sm, marginTop: 12, borderWidth: 1, borderColor: theme.colors.surfaceVariant },
   mapBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.surfaceVariant, padding: 12, borderRadius: theme.radii.sm, marginTop: 12, borderWidth: 1, borderColor: theme.colors.outline },
   mapBtnText: { color: theme.colors.primary, marginLeft: 8, fontWeight: '600' },

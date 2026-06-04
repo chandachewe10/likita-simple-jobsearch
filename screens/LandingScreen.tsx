@@ -8,57 +8,72 @@ import {
   Animated,
   Dimensions,
   StatusBar,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import LikitaLogo from '../components/LikitaLogo';
 import theme from '../lib/theme';
 
 const { width } = Dimensions.get('window');
+const H_PAD = Platform.OS === 'web' ? 48 : theme.spacing.md;
+
+const C = {
+  heroBg: '#0B1220',
+  heroCard: '#151D2E',
+  accent: '#F59E0B',
+  accentDark: '#D97706',
+  accentSoft: 'rgba(245, 158, 11, 0.15)',
+  heroText: '#F8FAFC',
+  heroMuted: '#94A3B8',
+  lightBg: '#F8FAFC',
+  card: '#FFFFFF',
+  border: '#E2E8F0',
+  text: '#0F172A',
+  muted: '#64748B',
+  worker: '#0EA5E9',
+  employer: '#8B5CF6',
+  success: '#10B981',
+};
 
 const TRADES = [
-  { icon: '🔧', label: 'Plumbing' },
-  { icon: '⚡', label: 'Electrical' },
-  { icon: '🏗️', label: 'Construction' },
-  { icon: '🪚', label: 'Carpentry' },
-  { icon: '🎨', label: 'Painting' },
-  { icon: '🔩', label: 'Welding' },
+  { icon: 'water-outline' as const, label: 'Plumbing' },
+  { icon: 'flash-outline' as const, label: 'Electrical' },
+  { icon: 'hammer-outline' as const, label: 'Carpentry' },
+  { icon: 'color-palette-outline' as const, label: 'Painting' },
+  { icon: 'construct-outline' as const, label: 'Building' },
+  { icon: 'flame-outline' as const, label: 'Welding' },
 ];
 
-const STATS = [
-  { value: '2,400+', label: 'Skilled Workers' },
-  { value: '380+', label: 'Employers' },
-  { value: '10', label: 'Provinces' },
+const STEPS = [
+  { num: '01', title: 'Create your profile', body: 'Add skills, location, and contact details in minutes.' },
+  { num: '02', title: 'Match & apply', body: 'Workers find jobs. Employers review applicants with AI help.' },
+  { num: '03', title: 'Hire & get paid', body: 'Accept, complete work, and pay via mobile money.' },
 ];
 
-function TradeChip({ icon, label, delay }: { icon: string; label: string; delay: number }) {
-  const fade = useRef(new Animated.Value(0)).current;
-  const slide = useRef(new Animated.Value(12)).current;
+function FadeIn({
+  children,
+  delay = 0,
+  style,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  style?: object;
+}) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(16)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fade, { toValue: 1, duration: 400, delay, useNativeDriver: true }),
-      Animated.timing(slide, { toValue: 0, duration: 400, delay, useNativeDriver: true }),
+      Animated.timing(opacity, { toValue: 1, duration: 500, delay, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration: 500, delay, useNativeDriver: true }),
     ]).start();
   }, []);
 
   return (
-    <Animated.View style={[styles.chip, { opacity: fade, transform: [{ translateY: slide }] }]}>
-      <Text style={styles.chipIcon}>{icon}</Text>
-      <Text style={styles.chipLabel}>{label}</Text>
-    </Animated.View>
-  );
-}
-
-function StatItem({ value, label, delay }: { value: string; label: string; delay: number }) {
-  const fade = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    Animated.timing(fade, { toValue: 1, duration: 500, delay, useNativeDriver: true }).start();
-  }, []);
-  return (
-    <Animated.View style={[styles.statItem, { opacity: fade }]}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
+    <Animated.View style={[style, { opacity, transform: [{ translateY }] }]}>
+      {children}
     </Animated.View>
   );
 }
@@ -66,375 +81,549 @@ function StatItem({ value, label, delay }: { value: string; label: string; delay
 export default function LandingScreen() {
   const nav = useNavigation<any>();
 
-  const heroFade = useRef(new Animated.Value(0)).current;
-  const heroSlide = useRef(new Animated.Value(24)).current;
-  const badgeFade = useRef(new Animated.Value(0)).current;
-  const btnScale = useRef(new Animated.Value(0.92)).current;
-
-  useEffect(() => {
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(badgeFade, { toValue: 1, duration: 400, useNativeDriver: true }),
-      ]),
-      Animated.parallel([
-        Animated.timing(heroFade, { toValue: 1, duration: 500, useNativeDriver: true }),
-        Animated.timing(heroSlide, { toValue: 0, duration: 500, useNativeDriver: true }),
-      ]),
-      Animated.spring(btnScale, { toValue: 1, friction: 6, useNativeDriver: true }),
-    ]).start();
-  }, []);
-
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <StatusBar barStyle="dark-content" />
+    <View style={styles.root}>
+      <StatusBar barStyle="light-content" backgroundColor={C.heroBg} />
       <ScrollView
-        contentContainerStyle={styles.scroll}
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header bar */}
-        <View style={styles.topBar}>
-          <LikitaLogo size="lg" style={styles.logoFlex} />
-          <TouchableOpacity
-            style={styles.signInChip}
-            onPress={() => nav.navigate('Login')}
-          >
-            <Text style={styles.signInChipText}>Sign in</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Hero block */}
+        <View style={styles.hero}>
+          <SafeAreaView edges={['top']} style={styles.heroSafe}>
+            <View style={[styles.inner, styles.heroInner]}>
+              <View style={styles.navRow}>
+                <LikitaLogo size="md" variant="onDark" />
+                <TouchableOpacity
+                  style={styles.navSignIn}
+                  onPress={() => nav.navigate('Login')}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.navSignInText}>Sign in</Text>
+                </TouchableOpacity>
+              </View>
 
-        {/* Hero */}
-        <View style={styles.heroSection}>
-          <Animated.View style={{ opacity: badgeFade }}>
-            <View style={styles.badge}>
-              <View style={styles.badgeDot} />
-              <Text style={styles.badgeText}>Zambia's Trade Work Platform</Text>
+              <FadeIn delay={80}>
+                <View style={styles.pill}>
+                  <View style={styles.pillDot} />
+                  <Text style={styles.pillText}>Built for Zambia's skilled trades</Text>
+                </View>
+              </FadeIn>
+
+              <FadeIn delay={160}>
+                <Text style={styles.headline}>
+                  Hire trusted hands.{'\n'}
+                  <Text style={styles.headlineAccent}>Find real work.</Text>
+                </Text>
+                <Text style={styles.subhead}>
+                  Likita connects plumbers, electricians, builders, and more with employers who need them — fast, nearby, and verified.
+                </Text>
+              </FadeIn>
+
+              <FadeIn delay={240}>
+                <TouchableOpacity
+                  style={styles.ctaMain}
+                  onPress={() => nav.navigate('SignUp')}
+                  activeOpacity={0.9}
+                >
+                  <Text style={styles.ctaMainText}>Create free account</Text>
+                  <Ionicons name="arrow-forward" size={20} color={C.heroBg} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.ctaGhost}
+                  onPress={() => nav.navigate('Login')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.ctaGhostText}>I already have an account</Text>
+                </TouchableOpacity>
+              </FadeIn>
+
+              <FadeIn delay={320}>
+                <View style={styles.heroStats}>
+                  <View style={styles.heroStat}>
+                    <Text style={styles.heroStatValue}>2.4k+</Text>
+                    <Text style={styles.heroStatLabel}>Workers</Text>
+                  </View>
+                  <View style={styles.heroStatDivider} />
+                  <View style={styles.heroStat}>
+                    <Text style={styles.heroStatValue}>380+</Text>
+                    <Text style={styles.heroStatLabel}>Employers</Text>
+                  </View>
+                  <View style={styles.heroStatDivider} />
+                  <View style={styles.heroStat}>
+                    <Text style={styles.heroStatValue}>10</Text>
+                    <Text style={styles.heroStatLabel}>Provinces</Text>
+                  </View>
+                </View>
+              </FadeIn>
             </View>
-          </Animated.View>
+          </SafeAreaView>
 
-          <Animated.View
-            style={{ opacity: heroFade, transform: [{ translateY: heroSlide }] }}
-          >
-            <Text style={styles.heroHeadline}>
-              Find skilled tradespeople near you.
-            </Text>
-            <Text style={styles.heroSub}>
-              Connecting Zambian artisans, technicians, and builders with the employers who need them — from Lusaka to Livingstone.
-            </Text>
-          </Animated.View>
-
-          <Animated.View style={{ transform: [{ scale: btnScale }] }}>
-            <TouchableOpacity
-              style={styles.ctaPrimary}
-              onPress={() => nav.navigate('SignUp')}
-              activeOpacity={0.88}
-            >
-              <Text style={styles.ctaPrimaryText}>Get started — it's free</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.ctaSecondary}
-              onPress={() => nav.navigate('Login')}
-              activeOpacity={0.75}
-            >
-              <Text style={styles.ctaSecondaryText}>I already have an account</Text>
-            </TouchableOpacity>
-          </Animated.View>
+          <View style={styles.heroCurve} />
         </View>
 
-        {/* Divider label */}
-        <View style={styles.sectionLabel}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.sectionLabelText}>Trades we cover</Text>
-          <View style={styles.dividerLine} />
-        </View>
+        {/* Light content */}
+        <View style={styles.lightSection}>
+          <View style={styles.inner}>
+            <FadeIn delay={100}>
+              <Text style={styles.sectionEyebrow}>CHOOSE YOUR PATH</Text>
+              <Text style={styles.sectionTitle}>How will you use Likita?</Text>
+            </FadeIn>
 
-        {/* Trade chips grid */}
-        <View style={styles.chipsGrid}>
-          {TRADES.map((t, i) => (
-            <TradeChip key={t.label} icon={t.icon} label={t.label} delay={200 + i * 70} />
-          ))}
-        </View>
+            <FadeIn delay={180}>
+              <TouchableOpacity
+                style={styles.roleCard}
+                onPress={() => nav.navigate('SignUp')}
+                activeOpacity={0.92}
+              >
+                <View style={[styles.roleIconWrap, { backgroundColor: 'rgba(14, 165, 233, 0.12)' }]}>
+                  <Ionicons name="person" size={28} color={C.worker} />
+                </View>
+                <View style={styles.roleTextBlock}>
+                  <Text style={styles.roleTitle}>I'm looking for work</Text>
+                  <Text style={styles.roleBody}>
+                    Browse jobs by trade, apply with your profile, and grow your reputation.
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={22} color={C.muted} />
+              </TouchableOpacity>
 
-        {/* Stats strip */}
-        <View style={styles.statsStrip}>
-          {STATS.map((s, i) => (
-            <React.Fragment key={s.label}>
-              <StatItem value={s.value} label={s.label} delay={400 + i * 120} />
-              {i < STATS.length - 1 && <View style={styles.statDivider} />}
-            </React.Fragment>
-          ))}
-        </View>
+              <TouchableOpacity
+                style={[styles.roleCard, styles.roleCardLast]}
+                onPress={() => nav.navigate('SignUp')}
+                activeOpacity={0.92}
+              >
+                <View style={[styles.roleIconWrap, { backgroundColor: 'rgba(139, 92, 246, 0.12)' }]}>
+                  <Ionicons name="business" size={28} color={C.employer} />
+                </View>
+                <View style={styles.roleTextBlock}>
+                  <Text style={styles.roleTitle}>I'm hiring</Text>
+                  <Text style={styles.roleBody}>
+                    Post jobs, filter skilled workers nearby, accept applicants, and pay on completion.
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={22} color={C.muted} />
+              </TouchableOpacity>
+            </FadeIn>
 
-        {/* Value prop cards */}
-        <View style={styles.cardsSection}>
-          <View style={[styles.card, styles.cardWorker]}>
-            <Text style={styles.cardEmoji}>👷</Text>
-            <Text style={styles.cardTitle}>For workers</Text>
-            <Text style={styles.cardBody}>
-              Browse jobs that match your trade, apply in seconds, and get hired by verified employers.
-            </Text>
+            <FadeIn delay={260}>
+              <Text style={[styles.sectionEyebrow, { marginTop: 36 }]}>TRADES ON LIKITA</Text>
+              <View style={styles.tradesGrid}>
+                {TRADES.map((t) => (
+                  <View key={t.label} style={styles.tradeTile}>
+                    <Ionicons name={t.icon} size={22} color={C.accentDark} />
+                    <Text style={styles.tradeLabel}>{t.label}</Text>
+                  </View>
+                ))}
+              </View>
+            </FadeIn>
+
+            <FadeIn delay={340}>
+              <Text style={[styles.sectionEyebrow, { marginTop: 36 }]}>HOW IT WORKS</Text>
+              {STEPS.map((step, i) => (
+                <View key={step.num} style={[styles.stepRow, i === STEPS.length - 1 && { marginBottom: 0 }]}>
+                  <Text style={styles.stepNum}>{step.num}</Text>
+                  <View style={styles.stepContent}>
+                    <Text style={styles.stepTitle}>{step.title}</Text>
+                    <Text style={styles.stepBody}>{step.body}</Text>
+                  </View>
+                </View>
+              ))}
+            </FadeIn>
+
+            <FadeIn delay={420}>
+              <View style={styles.featuresCard}>
+                <View style={styles.featureItem}>
+                  <Ionicons name="location-outline" size={22} color={C.success} />
+                  <Text style={styles.featureText}>Find workers ranked by distance & rating</Text>
+                </View>
+                <View style={styles.featureDivider} />
+                <View style={styles.featureItem}>
+                  <Ionicons name="sparkles-outline" size={22} color={C.accentDark} />
+                  <Text style={styles.featureText}>AI recommendations on every applicant</Text>
+                </View>
+                <View style={styles.featureDivider} />
+                <View style={styles.featureItem}>
+                  <Ionicons name="phone-portrait-outline" size={22} color={C.worker} />
+                  <Text style={styles.featureText}>SMS alerts & mobile money payments</Text>
+                </View>
+              </View>
+            </FadeIn>
+
+            <FadeIn delay={500}>
+              <View style={styles.bottomCta}>
+                <Text style={styles.bottomCtaTitle}>Ready to get started?</Text>
+                <Text style={styles.bottomCtaSub}>Join Likita today — free for workers and employers.</Text>
+                <TouchableOpacity
+                  style={styles.bottomCtaBtn}
+                  onPress={() => nav.navigate('SignUp')}
+                  activeOpacity={0.9}
+                >
+                  <Text style={styles.bottomCtaBtnText}>Sign up now</Text>
+                </TouchableOpacity>
+              </View>
+            </FadeIn>
+
+            <Text style={styles.copyright}>© Likita · Zambia's trade work platform</Text>
           </View>
-          <View style={[styles.card, styles.cardEmployer]}>
-            <Text style={styles.cardEmoji}>🏢</Text>
-            <Text style={styles.cardTitle}>For employers</Text>
-            <Text style={styles.cardBody}>
-              Post a job, review applicants, and connect with qualified tradespeople fast.
-            </Text>
-          </View>
-        </View>
-
-        {/* Footer nudge */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Join thousands of tradespeople already on Likita.
-          </Text>
-          <TouchableOpacity onPress={() => nav.navigate('SignUp')}>
-            <Text style={styles.footerLink}>Create your free account →</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: C.lightBg,
+    ...Platform.select({
+      web: { minHeight: '100vh' as unknown as number },
+      default: {},
+    }),
   },
-  scroll: {
+  scroll: { flex: 1, width: '100%' },
+  scrollContent: {
+    flexGrow: 1,
+    width: '100%',
+  },
+  inner: {
+    width: '100%',
+    alignSelf: 'stretch',
+    paddingHorizontal: H_PAD,
+  },
+
+  hero: {
+    width: '100%',
+    backgroundColor: C.heroBg,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  heroSafe: { width: '100%' },
+  heroInner: {
     paddingBottom: 48,
   },
+  heroCurve: {
+    position: 'absolute',
+    bottom: -1,
+    left: 0,
+    right: 0,
+    height: 28,
+    backgroundColor: C.lightBg,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+  },
 
-  // Top bar
-  topBar: {
+  navRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: 16,
+    justifyContent: 'space-between',
+    paddingTop: 8,
+    marginBottom: 28,
   },
-  logoFlex: {
-    flex: 1,
-  },
-  signInChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
+  navSignIn: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: theme.colors.primary,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
   },
-  signInChipText: {
-    color: theme.colors.primary,
+  navSignInText: {
+    color: C.heroText,
     fontWeight: '600',
-    fontSize: 13,
+    fontSize: 14,
   },
 
-  // Hero
-  heroSection: {
-    paddingHorizontal: theme.spacing.md,
-    paddingTop: 20,
-    paddingBottom: 28,
-  },
-  badge: {
+  pill: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    backgroundColor: theme.colors.surface,
-    borderRadius: 20,
+    backgroundColor: C.accentSoft,
     paddingHorizontal: 12,
-    paddingVertical: 5,
-    marginBottom: 18,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginBottom: 20,
     borderWidth: 1,
-    borderColor: theme.colors.surfaceVariant,
+    borderColor: 'rgba(245, 158, 11, 0.35)',
   },
-  badgeDot: {
-    width: 7,
-    height: 7,
+  pillDot: {
+    width: 8,
+    height: 8,
     borderRadius: 4,
-    backgroundColor: '#22c55e',
-    marginRight: 6,
+    backgroundColor: C.accent,
+    marginRight: 8,
   },
-  badgeText: {
+  pillText: {
+    color: C.accent,
     fontSize: 12,
-    color: theme.colors.muted,
-    fontWeight: '500',
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
-  heroHeadline: {
-    fontSize: 40,
+
+  headline: {
+    fontSize: width > 400 ? 38 : 34,
     fontWeight: '800',
-    color: theme.colors.text,
-    lineHeight: 46,
-    letterSpacing: -1.5,
+    color: C.heroText,
+    lineHeight: width > 400 ? 44 : 40,
+    letterSpacing: -1.2,
     marginBottom: 14,
   },
-  heroAccent: {
-    color: theme.colors.primary,
+  headlineAccent: {
+    color: C.accent,
   },
-  heroSub: {
-    fontSize: 15,
-    color: theme.colors.muted,
-    lineHeight: 22,
-    marginBottom: 28,
-    maxWidth: width * 0.85,
-  },
-
-  // CTAs
-  ctaPrimary: {
-    backgroundColor: theme.colors.primary,
-    paddingVertical: 15,
-    borderRadius: theme.radii.md,
-    alignItems: 'center',
-    marginBottom: 10,
-    shadowColor: theme.colors.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.28,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  ctaPrimaryText: {
-    color: theme.colors.onPrimary,
-    fontWeight: '700',
+  subhead: {
     fontSize: 16,
+    color: C.heroMuted,
+    lineHeight: 24,
+    marginBottom: 28,
+    maxWidth: Platform.OS === 'web' ? 640 : undefined,
   },
-  ctaSecondary: {
-    paddingVertical: 13,
-    borderRadius: theme.radii.md,
+
+  ctaMain: {
+    flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: theme.colors.surfaceVariant,
+    justifyContent: 'center',
+    gap: 10,
+    backgroundColor: C.accent,
+    paddingVertical: 16,
+    borderRadius: 14,
+    marginBottom: 12,
+    shadowColor: C.accent,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 6,
+    ...(Platform.OS === 'web' ? { cursor: 'pointer' as const } : {}),
   },
-  ctaSecondaryText: {
-    color: theme.colors.muted,
+  ctaMainText: {
+    color: C.heroBg,
+    fontWeight: '800',
+    fontSize: 17,
+  },
+  ctaGhost: {
+    paddingVertical: 14,
+    alignItems: 'flex-start',
+    marginBottom: 28,
+    ...(Platform.OS === 'web' ? { cursor: 'pointer' as const } : {}),
+  },
+  ctaGhostText: {
+    color: C.heroMuted,
     fontWeight: '600',
     fontSize: 15,
   },
 
-  // Section divider label
-  sectionLabel: {
+  heroStats: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: theme.spacing.md,
-    marginBottom: 16,
-    marginTop: 4,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: theme.colors.surfaceVariant,
-  },
-  sectionLabelText: {
-    marginHorizontal: 10,
-    fontSize: 11,
-    fontWeight: '600',
-    color: theme.colors.muted,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-
-  // Chips
-  chipsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: theme.spacing.md,
-    gap: 8,
-    marginBottom: 28,
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    backgroundColor: C.heroCard,
+    borderRadius: 16,
+    paddingVertical: 18,
     borderWidth: 1,
-    borderColor: theme.colors.surfaceVariant,
-    gap: 6,
+    borderColor: 'rgba(255,255,255,0.06)',
   },
-  chipIcon: { fontSize: 16 },
-  chipLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: theme.colors.text,
-  },
-
-  // Stats
-  statsStrip: {
-    flexDirection: 'row',
-    marginHorizontal: theme.spacing.md,
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radii.md,
-    paddingVertical: 20,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: theme.colors.surfaceVariant,
-  },
-  statItem: {
+  heroStat: {
     flex: 1,
     alignItems: 'center',
   },
-  statValue: {
+  heroStatValue: {
     fontSize: 22,
     fontWeight: '800',
-    color: theme.colors.primary,
+    color: C.heroText,
     letterSpacing: -0.5,
   },
-  statLabel: {
+  heroStatLabel: {
     fontSize: 11,
-    color: theme.colors.muted,
+    color: C.heroMuted,
     marginTop: 2,
-    fontWeight: '500',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
-  statDivider: {
+  heroStatDivider: {
     width: 1,
-    backgroundColor: theme.colors.surfaceVariant,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     marginVertical: 4,
   },
 
-  // Cards
-  cardsSection: {
-    paddingHorizontal: theme.spacing.md,
-    gap: 12,
-    marginBottom: 28,
+  lightSection: {
+    width: '100%',
+    backgroundColor: C.lightBg,
+    paddingTop: 8,
+    paddingBottom: 40,
   },
-  card: {
-    borderRadius: theme.radii.md,
-    padding: 20,
-    borderWidth: 1,
-  },
-  cardWorker: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.surfaceVariant,
-  },
-  cardEmployer: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.surfaceVariant,
-  },
-  cardEmoji: { fontSize: 28, marginBottom: 10 },
-  cardTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: theme.colors.text,
+
+  sectionEyebrow: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: C.accentDark,
+    letterSpacing: 1.2,
     marginBottom: 6,
   },
-  cardBody: {
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: C.text,
+    letterSpacing: -0.5,
+    marginBottom: 20,
+  },
+
+  roleCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: C.card,
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: C.border,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 2,
+    ...(Platform.OS === 'web' ? { cursor: 'pointer' as const } : {}),
+  },
+  roleCardLast: { marginBottom: 0 },
+  roleIconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  roleTextBlock: { flex: 1, marginRight: 8 },
+  roleTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: C.text,
+    marginBottom: 4,
+  },
+  roleBody: {
+    fontSize: 13,
+    color: C.muted,
+    lineHeight: 19,
+  },
+
+  tradesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginBottom: 8,
+  },
+  tradeTile: {
+    width: Platform.OS === 'web' ? '31%' : (width - H_PAD * 2 - 20) / 3,
+    minWidth: 100,
+    flexGrow: 1,
+    backgroundColor: C.card,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: C.border,
+    gap: 6,
+  },
+  tradeLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: C.text,
+    textAlign: 'center',
+  },
+
+  stepRow: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    alignItems: 'flex-start',
+  },
+  stepNum: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: C.accent,
+    width: 36,
+    marginTop: 2,
+  },
+  stepContent: { flex: 1 },
+  stepTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: C.text,
+    marginBottom: 4,
+  },
+  stepBody: {
     fontSize: 14,
-    color: theme.colors.muted,
+    color: C.muted,
     lineHeight: 20,
   },
 
-  // Footer
-  footer: {
-    paddingHorizontal: theme.spacing.md,
+  featuresCard: {
+    marginTop: 36,
+    backgroundColor: C.card,
+    borderRadius: 16,
+    padding: 4,
+    borderWidth: 1,
+    borderColor: C.border,
+    overflow: 'hidden',
+  },
+  featureItem: {
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 14,
+    padding: 16,
   },
-  footerText: {
-    color: theme.colors.muted,
+  featureDivider: {
+    height: 1,
+    backgroundColor: C.border,
+    marginHorizontal: 16,
+  },
+  featureText: {
+    flex: 1,
     fontSize: 14,
-    textAlign: 'center',
+    fontWeight: '600',
+    color: C.text,
+    lineHeight: 20,
   },
-  footerLink: {
-    color: theme.colors.primary,
-    fontWeight: '700',
-    fontSize: 15,
+
+  bottomCta: {
+    marginTop: 36,
+    backgroundColor: C.heroBg,
+    borderRadius: 20,
+    padding: 28,
+    alignItems: 'flex-start',
+  },
+  bottomCtaTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: C.heroText,
+    marginBottom: 8,
+    textAlign: 'left',
+  },
+  bottomCtaSub: {
+    fontSize: 14,
+    color: C.heroMuted,
+    textAlign: 'left',
+    marginBottom: 20,
+    lineHeight: 20,
+    maxWidth: 520,
+  },
+  bottomCtaBtn: {
+    backgroundColor: C.accent,
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    borderRadius: 12,
+    ...(Platform.OS === 'web' ? { cursor: 'pointer' as const } : {}),
+  },
+  bottomCtaBtnText: {
+    color: C.heroBg,
+    fontWeight: '800',
+    fontSize: 16,
+  },
+
+  copyright: {
+    textAlign: 'left',
+    color: C.muted,
+    fontSize: 12,
+    marginTop: 28,
+    marginBottom: 8,
   },
 });

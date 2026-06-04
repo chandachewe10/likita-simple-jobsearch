@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import theme from '../lib/theme';
 
 type LogoSize = 'sm' | 'md' | 'lg';
@@ -13,11 +14,13 @@ const SIZES: Record<LogoSize, { mark: number; icon: number; text: number }> = {
 type Props = {
   size?: LogoSize;
   showText?: boolean;
+  variant?: 'default' | 'onDark';
   style?: ViewStyle;
 };
 
-export default function LikitaLogo({ size = 'md', showText = true, style }: Props) {
+export default function LikitaLogo({ size = 'md', showText = true, variant = 'default', style }: Props) {
   const dims = SIZES[size];
+  const textColor = variant === 'onDark' ? '#F8FAFC' : theme.colors.text;
 
   return (
     <View style={[styles.row, style]}>
@@ -27,14 +30,14 @@ export default function LikitaLogo({ size = 'md', showText = true, style }: Prop
           {
             width: dims.mark,
             height: dims.mark,
-            borderRadius: dims.mark * 0.25,
+            borderRadius: dims.mark * 0.28,
           },
         ]}
       >
-        <Text style={[styles.icon, { fontSize: dims.icon }]}>⚒️</Text>
+        <Ionicons name="hammer" size={dims.icon} color="#FFFFFF" />
       </View>
       {showText && (
-        <Text style={[styles.text, { fontSize: dims.text }]}>Likita</Text>
+        <Text style={[styles.text, { fontSize: dims.text, color: textColor }]}>Likita</Text>
       )}
     </View>
   );
@@ -46,17 +49,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mark: {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: '#F59E0B',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
-    shadowColor: theme.colors.primary,
+    shadowColor: '#F59E0B',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.35,
     shadowRadius: 8,
     elevation: 3,
   },
-  icon: {},
   text: {
     fontWeight: '800',
     color: theme.colors.text,

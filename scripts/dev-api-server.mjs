@@ -117,6 +117,87 @@ async function handleReviewRequest(body) {
   };
 }
 
+async function handleSmsRequest(body) {
+  const { numbers, message } = body || {};
+  if (!numbers || !message) throw new Error('numbers and message are required.');
+
+  const token = process.env.SWIFTSMS_TOKEN;
+  const senderId = process.env.SWIFTSMS_SENDER_ID || 'FIEROTECHS';
+  if (!token) throw new Error('SWIFTSMS_TOKEN is not configured in .env');
+
+  const response = await fetch('https://swiftsms.macroit.org/api/send_message', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ sender_id: senderId, numbers, message }),
+  });
+
+  const text = await response.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = { raw: text };
+  }
+  if (!response.ok) {
+    throw new Error(data.message || data.error || `SwiftSMS failed (${response.status}).`);
+  }
+  return { success: true, data };
+}
+
+async function handleLencoPayment(body) {
+  const { phone, operator, amount, reference } = body || {};
+  if (!phone || !operator || amount == null || !reference) {
+    throw new Error('phone, operator, amount, and reference are required.');
+  }
+
+  const token = process.env.LENCO_API_TOKEN;
+  if (!token) {
+    throw new Error('LENCO_API_TOKEN must be set in .env');
+  }
+
+  const response = await fetch('https://api.lenco.co/access/v2/collections/mobile-money', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      operator,
+      phone: String(phone),
+      amount: String(amount),
+      reference: String(reference),
+      bearer: 'customer',
+    }),
+  });
+
+  const text = await response.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = { raw: text };
+  }
+  if (!response.ok) {
+    throw new Error(data.message || data.error || `Lenco collection failed (${response.status}).`);
+  }
+  return {
+    success: true,
+    reference: data.data?.reference || data.data?.id || data.reference || reference,
+    data,
+  };
+}
+
+const routes = {
+  '/api/ai-review': handleReviewRequest,
+  '/api/send-sms': handleSmsRequest,
+  '/api/lenco-payment': handleLencoPayment,
+};
+
 const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -128,7 +209,8 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (req.method !== 'POST' || req.url !== '/api/ai-review') {
+  const handler = routes[req.url || ''];
+  if (req.method !== 'POST' || !handler) {
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Not found' }));
     return;
@@ -142,12 +224,12 @@ const server = http.createServer(async (req, res) => {
   req.on('end', async () => {
     try {
       const body = raw ? JSON.parse(raw) : {};
-      const result = await handleReviewRequest(body);
+      const result = await handler(body);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(result));
     } catch (error) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: error.message || 'AI review failed' }));
+      res.end(JSON.stringify({ error: error.message || 'Request failed' }));
     }
   });
 });
@@ -174,5 +256,6 @@ server.on('error', async (error) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`AI review API running at http://localhost:${PORT}/api/ai-review`);
+  console.log(`Likita API server at http://localhost:${PORT}`);
+  console.log('  /api/ai-review  /api/send-sms  /api/lenco-payment');
 });

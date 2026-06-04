@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User, Job, Application, AiReview } from '../types';
 import { MAX_RESUME_STORAGE_CHARS } from '../lib/resume';
+import { isProfileComplete } from '../lib/profile';
 import { v4 as uuidv4 } from 'uuid';
 
 type DataState = {
@@ -29,7 +30,14 @@ type DataContextValue = {
     }
   ) => Promise<Application>;
   saveApplicationAiReview: (applicationId: string, review: AiReview) => Promise<void>;
+  acceptApplication: (applicationId: string) => Promise<Application>;
+  rejectApplication: (applicationId: string) => Promise<Application>;
+  markApplicationComplete: (applicationId: string) => Promise<Application>;
   rateApplication: (applicationId: string, rating: number) => Promise<void>;
+  recordApplicationPayment: (
+    applicationId: string,
+    payment: { reference: string; status: 'paid' | 'failed' | 'pending'; phone?: string }
+  ) => Promise<Application>;
   updateProfile: (updates: Partial<User>) => Promise<User>;
 };
 
@@ -59,6 +67,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
             role: 'employer',
             location: { latitude: -15.3875, longitude: 28.3228 },
             address: 'Cairo Road, Lusaka',
+            profileComplete: true,
           };
           const employee: User = {
             id: uuidv4(),
@@ -73,6 +82,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
             nrc: '123456/78/1',
             qualifications: 'Licensed Plumber',
             location: { latitude: -15.392, longitude: 28.318 },
+            profileComplete: true,
           };
           const employee2: User = {
             id: uuidv4(),
@@ -86,6 +96,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
             address: 'Kabulonga, Lusaka',
             qualifications: 'Trade Certificate in Carpentry',
             location: { latitude: -15.41, longitude: 28.35 },
+            profileComplete: true,
           };
           const job: Job = {
             id: uuidv4(),
@@ -129,7 +140,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (u: Omit<User, 'id' | 'rating'>) => {
     const existing = state.users.find((x) => x.email.toLowerCase() === u.email.toLowerCase());
     if (existing) throw new Error('Email already in use');
-    const user: User = { ...u, id: uuidv4() };
+    const user: User = { ...u, id: uuidv4(), profileComplete: false };
     const next = { ...state, users: [...state.users, user] };
     setState(next);
     setCurrentUser(user);
@@ -151,7 +162,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateProfile = async (updates: Partial<User>) => {
     if (!currentUser) throw new Error('Not logged in');
-    const updatedUser = { ...currentUser, ...updates };
+    const merged = { ...currentUser, ...updates };
+    const updatedUser: User = {
+      ...merged,
+      profileComplete: isProfileComplete(merged),
+    };
     setCurrentUser(updatedUser);
     setState(s => ({
       ...s,
@@ -176,6 +191,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       resumeFileName?: string;
     }
   ) => {
+    const employee = state.users.find((u) => u.id === employeeId);
+    if (employee && !isProfileComplete(employee)) {
+      throw new Error('Please complete your profile before applying for jobs.');
+    }
     const already = state.applications.find((a) => a.jobId === jobId && a.employeeId === employeeId);
     if (already) throw new Error('Already applied');
     if (options?.resumeUri && options.resumeUri.length > MAX_RESUME_STORAGE_CHARS) {
@@ -209,16 +228,70 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }));
   };
 
+  const updateApplication = (applicationId: string, patch: Partial<Application>) => {
+    let updated: Application | undefined;
+    setState((s) => {
+      const applications = s.applications.map((a) => {
+        if (a.id !== applicationId) return a;
+        updated = { ...a, ...patch };
+        return updated;
+      });
+      return { ...s, applications };
+    });
+    if (!updated) throw new Error('Application not found');
+    return updated;
+  };
+
+  const acceptApplication = async (applicationId: string) => {
+    const app = state.applications.find((a) => a.id === applicationId);
+    if (!app) throw new Error('Application not found');
+    if (app.status !== 'applied') throw new Error('Application already reviewed');
+    return updateApplication(applicationId, { status: 'accepted' });
+  };
+
+  const rejectApplication = async (applicationId: string) => {
+    const app = state.applications.find((a) => a.id === applicationId);
+    if (!app) throw new Error('Application not found');
+    if (app.status !== 'applied') throw new Error('Application already reviewed');
+    return updateApplication(applicationId, { status: 'rejected' });
+  };
+
+  const markApplicationComplete = async (applicationId: string) => {
+    const app = state.applications.find((a) => a.id === applicationId);
+    if (!app) throw new Error('Application not found');
+    if (app.status !== 'accepted') throw new Error('Only accepted applications can be marked complete');
+    return updateApplication(applicationId, { status: 'completed' });
+  };
+
+  const recordApplicationPayment = async (
+    applicationId: string,
+    payment: { reference: string; status: 'paid' | 'failed' | 'pending'; phone?: string }
+  ) => {
+    return updateApplication(applicationId, {
+      paymentReference: payment.reference,
+      paymentPhone: payment.phone,
+      paymentStatus: payment.status,
+      paidAt: payment.status === 'paid' ? Date.now() : undefined,
+    });
+  };
+
   const rateApplication = async (applicationId: string, rating: number) => {
     setState((s) => {
-      const applications = s.applications.map((a) => (a.id === applicationId ? { ...a, rating, status: 'completed' as const } : a));
-      // update employee average rating
+      const applications = s.applications.map((a) =>
+        a.id === applicationId ? { ...a, rating } : a
+      );
       const app = s.applications.find((a) => a.id === applicationId);
       if (!app) return { ...s, applications };
       const employeeId = app.employeeId;
-      const employeeApps = applications.filter((a) => a.employeeId === employeeId && typeof a.rating === 'number');
-      const avg = employeeApps.reduce((sum, cur) => sum + (cur.rating || 0), 0) / (employeeApps.length || 1);
-      const users = s.users.map((u) => (u.id === employeeId ? { ...u, rating: Math.round(avg * 10) / 10 } : u));
+      const employeeApps = applications.filter(
+        (a) => a.employeeId === employeeId && typeof a.rating === 'number'
+      );
+      const avg =
+        employeeApps.reduce((sum, cur) => sum + (cur.rating || 0), 0) /
+        (employeeApps.length || 1);
+      const users = s.users.map((u) =>
+        u.id === employeeId ? { ...u, rating: Math.round(avg * 10) / 10 } : u
+      );
       return { ...s, applications, users };
     });
   };
@@ -233,6 +306,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     postJob,
     applyToJob,
     saveApplicationAiReview,
+    acceptApplication,
+    rejectApplication,
+    markApplicationComplete,
+    recordApplicationPayment,
     rateApplication,
     updateProfile,
   };

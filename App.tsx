@@ -6,6 +6,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { DataProvider, useData } from './hooks/useData';
+import { isProfileComplete } from './lib/profile';
 import LandingScreen from './screens/LandingScreen';
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
@@ -99,16 +100,26 @@ function RootNavigation() {
   }
 
   if (currentUser.role === 'employee') {
+    const initialTab = isProfileComplete(currentUser) ? 'Jobs' : 'Profile';
     return (
-      <Tab.Navigator screenOptions={tabScreenOptions}>
+      <Tab.Navigator
+        key={`employee-${currentUser.id}-${initialTab}`}
+        initialRouteName={initialTab}
+        screenOptions={tabScreenOptions}
+      >
         <Tab.Screen name="Jobs" component={EmployeeStack} options={{ title: 'Jobs' }} />
         <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
       </Tab.Navigator>
     );
   }
 
+  const initialTab = isProfileComplete(currentUser) ? 'Jobs' : 'Profile';
   return (
-    <Tab.Navigator screenOptions={tabScreenOptions}>
+    <Tab.Navigator
+      key={`employer-${currentUser.id}-${initialTab}`}
+      initialRouteName={initialTab}
+      screenOptions={tabScreenOptions}
+    >
       <Tab.Screen name="Jobs" component={EmployerStack} options={{ title: 'My Jobs' }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
     </Tab.Navigator>
