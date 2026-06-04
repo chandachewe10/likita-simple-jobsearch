@@ -1,7 +1,11 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+
+const require = createRequire(import.meta.url);
+const { sendSwiftSms } = require('../api/swiftsms-client.js');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.AI_REVIEW_PORT || 3001);
@@ -122,29 +126,10 @@ async function handleSmsRequest(body) {
   if (!numbers || !message) throw new Error('numbers and message are required.');
 
   const token = process.env.SWIFTSMS_TOKEN;
-  const senderId = process.env.SWIFTSMS_SENDER_ID || 'FIEROTECHS';
+  const senderId = process.env.SWIFTSMS_SENDER_ID || 'LIKITA';
   if (!token) throw new Error('SWIFTSMS_TOKEN is not configured in .env');
 
-  const response = await fetch('https://swiftsms.macroit.org/api/send_message', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ sender_id: senderId, numbers, message }),
-  });
-
-  const text = await response.text();
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    data = { raw: text };
-  }
-  if (!response.ok) {
-    throw new Error(data.message || data.error || `SwiftSMS failed (${response.status}).`);
-  }
+  const { data } = await sendSwiftSms({ token, senderId, numbers, message });
   return { success: true, data };
 }
 
@@ -228,8 +213,15 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(result));
     } catch (error) {
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: error.message || 'Request failed' }));
+      const status =
+        error.status && error.status >= 400 && error.status < 600 ? error.status : 500;
+      res.writeHead(status, { 'Content-Type': 'application/json' });
+      res.end(
+        JSON.stringify({
+          error: error.message || 'Request failed',
+          details: error.details,
+        })
+      );
     }
   });
 });
