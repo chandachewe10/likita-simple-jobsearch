@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   navSignInText: {
     color: C.heroText,
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 17,
   },
 
   pill: {
@@ -356,16 +356,16 @@ const styles = StyleSheet.create({
   },
   pillText: {
     color: C.accent,
-    fontSize: 12,
+    fontSize: 15,
     fontWeight: '700',
     letterSpacing: 0.3,
   },
 
   headline: {
-    fontSize: width > 400 ? 38 : 34,
+    fontSize: width > 400 ? 44 : 40,
     fontWeight: '800',
     color: C.heroText,
-    lineHeight: width > 400 ? 44 : 40,
+    lineHeight: width > 400 ? 50 : 46,
     letterSpacing: -1.2,
     marginBottom: 14,
   },
@@ -373,9 +373,9 @@ const styles = StyleSheet.create({
     color: C.accent,
   },
   subhead: {
-    fontSize: 16,
+    fontSize: 19,
     color: C.heroMuted,
-    lineHeight: 24,
+    lineHeight: 28,
     marginBottom: 28,
     maxWidth: Platform.OS === 'web' ? 640 : undefined,
   },
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
   ctaMainText: {
     color: C.heroBg,
     fontWeight: '800',
-    fontSize: 17,
+    fontSize: 20,
   },
   ctaGhost: {
     paddingVertical: 14,
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
   ctaGhostText: {
     color: C.heroMuted,
     fontWeight: '600',
-    fontSize: 15,
+    fontSize: 18,
   },
 
   heroStats: {
@@ -426,13 +426,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   heroStatValue: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: '800',
     color: C.heroText,
     letterSpacing: -0.5,
   },
   heroStatLabel: {
-    fontSize: 11,
+    fontSize: 14,
     color: C.heroMuted,
     marginTop: 2,
     fontWeight: '600',
@@ -453,14 +453,14 @@ const styles = StyleSheet.create({
   },
 
   sectionEyebrow: {
-    fontSize: 11,
+    fontSize: 14,
     fontWeight: '800',
     color: C.accentDark,
     letterSpacing: 1.2,
     marginBottom: 6,
   },
   sectionTitle: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '800',
     color: C.text,
     letterSpacing: -0.5,
@@ -494,15 +494,15 @@ const styles = StyleSheet.create({
   },
   roleTextBlock: { flex: 1, marginRight: 8 },
   roleTitle: {
-    fontSize: 17,
+    fontSize: 20,
     fontWeight: '700',
     color: C.text,
     marginBottom: 4,
   },
   roleBody: {
-    fontSize: 13,
+    fontSize: 16,
     color: C.muted,
-    lineHeight: 19,
+    lineHeight: 22,
   },
 
   tradesGrid: {
@@ -525,7 +525,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   tradeLabel: {
-    fontSize: 12,
+    fontSize: 15,
     fontWeight: '600',
     color: C.text,
     textAlign: 'center',
@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   stepNum: {
-    fontSize: 13,
+    fontSize: 16,
     fontWeight: '800',
     color: C.accent,
     width: 36,
@@ -545,15 +545,15 @@ const styles = StyleSheet.create({
   },
   stepContent: { flex: 1 },
   stepTitle: {
-    fontSize: 16,
+    fontSize: 19,
     fontWeight: '700',
     color: C.text,
     marginBottom: 4,
   },
   stepBody: {
-    fontSize: 14,
+    fontSize: 17,
     color: C.muted,
-    lineHeight: 20,
+    lineHeight: 24,
   },
 
   featuresCard: {
@@ -578,10 +578,10 @@ const styles = StyleSheet.create({
   },
   featureText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 17,
     fontWeight: '600',
     color: C.text,
-    lineHeight: 20,
+    lineHeight: 24,
   },
 
   bottomCta: {
@@ -592,18 +592,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   bottomCtaTitle: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: '800',
     color: C.heroText,
     marginBottom: 8,
     textAlign: 'left',
   },
   bottomCtaSub: {
-    fontSize: 14,
+    fontSize: 17,
     color: C.heroMuted,
     textAlign: 'left',
     marginBottom: 20,
-    lineHeight: 20,
+    lineHeight: 24,
     maxWidth: 520,
   },
   bottomCtaBtn: {
@@ -616,13 +616,13 @@ const styles = StyleSheet.create({
   bottomCtaBtnText: {
     color: C.heroBg,
     fontWeight: '800',
-    fontSize: 16,
+    fontSize: 19,
   },
 
   copyright: {
     textAlign: 'left',
     color: C.muted,
-    fontSize: 12,
+    fontSize: 15,
     marginTop: 28,
     marginBottom: 8,
   },

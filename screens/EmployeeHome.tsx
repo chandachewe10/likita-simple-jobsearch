@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FCD34D',
   },
-  profileBannerText: { color: '#92400E', fontSize: 13, fontWeight: '600' },
+  profileBannerText: { color: '#92400E', fontSize: theme.type.caption, fontWeight: '600' },
   empty: { padding: theme.spacing.lg, alignItems: 'center' },
-  muted: { color: theme.colors.muted },
+  muted: { color: theme.colors.muted, fontSize: theme.type.body },
 });

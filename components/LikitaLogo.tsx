@@ -6,9 +6,9 @@ import theme from '../lib/theme';
 type LogoSize = 'sm' | 'md' | 'lg';
 
 const SIZES: Record<LogoSize, { mark: number; icon: number; text: number }> = {
-  sm: { mark: 36, icon: 18, text: 20 },
-  md: { mark: 48, icon: 24, text: 26 },
-  lg: { mark: 56, icon: 28, text: 32 },
+  sm: { mark: 40, icon: 20, text: 22 },
+  md: { mark: 52, icon: 26, text: 28 },
+  lg: { mark: 60, icon: 30, text: 34 },
 };
 
 type Props = {

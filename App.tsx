@@ -64,7 +64,7 @@ const tabScreenOptions = ({ route }: { route: { name: string } }) => ({
   tabBarActiveTintColor: theme.colors.primary,
   tabBarInactiveTintColor: theme.colors.muted,
   tabBarLabelStyle: {
-    fontSize: 12,
+    fontSize: theme.type.tab,
     fontWeight: '600' as const,
     marginBottom: Platform.OS === 'ios' ? 0 : 4,
   },
@@ -86,7 +86,7 @@ const tabScreenOptions = ({ route }: { route: { name: string } }) => ({
     } else if (route.name === 'Profile') {
       iconName = focused ? 'person' : 'person-outline';
     }
-    return <Ionicons name={iconName} size={size} color={color} />;
+    return <Ionicons name={iconName} size={size + 4} color={color} />;
   },
 });
 

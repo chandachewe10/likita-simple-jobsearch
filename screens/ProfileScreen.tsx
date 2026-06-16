@@ -173,11 +173,11 @@ export default function ProfileScreen() {
           <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setMapVisible(false)}>
-                <Text style={{ color: theme.colors.primary, fontSize: 16 }}>Cancel</Text>
+                <Text style={{ color: theme.colors.primary, fontSize: theme.type.headline }}>Cancel</Text>
               </TouchableOpacity>
-              <Text style={{ fontSize: 18, fontWeight: '700' }}>Pin Location</Text>
+              <Text style={{ fontSize: theme.type.title, fontWeight: '700' }}>Pin Location</Text>
               <TouchableOpacity onPress={() => { setLocation(tempLocation); setMapVisible(false); }}>
-                <Text style={{ color: theme.colors.primary, fontSize: 16, fontWeight: '700' }}>Confirm</Text>
+                <Text style={{ color: theme.colors.primary, fontSize: theme.type.headline, fontWeight: '700' }}>Confirm</Text>
               </TouchableOpacity>
             </View>
             <MapPicker tempLocation={tempLocation} setTempLocation={setTempLocation} />
@@ -200,27 +200,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.primary,
   },
-  setupTitle: { fontSize: 15, fontWeight: '700', color: theme.colors.text },
-  setupText: { fontSize: 13, color: theme.colors.muted, marginTop: 4, lineHeight: 18 },
-  input: { backgroundColor: theme.colors.surface, padding: 12, borderRadius: theme.radii.sm, marginTop: 12, borderWidth: 1, borderColor: theme.colors.surfaceVariant },
-  mapBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.surfaceVariant, padding: 12, borderRadius: theme.radii.sm, marginTop: 12, borderWidth: 1, borderColor: theme.colors.outline },
-  mapBtnText: { color: theme.colors.primary, marginLeft: 8, fontWeight: '600' },
-  primary: { backgroundColor: theme.colors.primary, padding: 14, borderRadius: theme.radii.md, marginTop: 18, alignItems: 'center' },
-  primaryText: { color: theme.colors.onPrimary, fontWeight: '700' },
+  setupTitle: { fontSize: theme.type.subtitle, fontWeight: '700', color: theme.colors.text },
+  setupText: { fontSize: theme.type.caption, color: theme.colors.muted, marginTop: 4, lineHeight: theme.lineHeight.small },
+  input: { ...theme.inputStyle, marginTop: 12 },
+  mapBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.colors.surfaceVariant, padding: 14, borderRadius: theme.radii.sm, marginTop: 12, borderWidth: 1, borderColor: theme.colors.outline },
+  mapBtnText: { color: theme.colors.primary, marginLeft: 8, fontWeight: '600', fontSize: theme.type.body },
+  primary: { backgroundColor: theme.colors.primary, padding: 16, borderRadius: theme.radii.md, marginTop: 18, alignItems: 'center' },
+  primaryText: { color: theme.colors.onPrimary, fontWeight: '700', fontSize: theme.type.body },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: theme.colors.surfaceVariant },
-  modalTitle: { fontSize: 18, fontWeight: '700', color: theme.colors.text },
+  modalTitle: { fontSize: theme.type.title, fontWeight: '700', color: theme.colors.text },
   skillsContainer: { marginTop: 12 },
-  dropdownToggle: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: theme.colors.surface, padding: 12, borderRadius: theme.radii.sm, borderWidth: 1, borderColor: theme.colors.surfaceVariant },
-  dropdownToggleText: { color: theme.colors.text, fontSize: 14 },
+  dropdownToggle: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', ...theme.inputStyle, marginTop: 0 },
+  dropdownToggleText: { color: theme.colors.text, fontSize: theme.type.body },
   skillsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 },
-  skillPill: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 16, backgroundColor: theme.colors.surfaceVariant, borderWidth: 1, borderColor: theme.colors.outline },
+  skillPill: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16, backgroundColor: theme.colors.surfaceVariant, borderWidth: 1, borderColor: theme.colors.outline },
   skillPillSelected: { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary },
-  skillPillText: { color: theme.colors.text, fontSize: 13 },
-  skillPillTextSelected: { color: theme.colors.onPrimary, fontWeight: '600' },
+  skillPillText: { color: theme.colors.text, fontSize: theme.type.caption },
+  skillPillTextSelected: { color: theme.colors.onPrimary, fontWeight: '600', fontSize: theme.type.caption },
   skillsModalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   skillsModalContent: { backgroundColor: theme.colors.background, borderTopLeftRadius: theme.radii.lg, borderTopRightRadius: theme.radii.lg, padding: theme.spacing.md, maxHeight: '80%' },
-  searchInput: { backgroundColor: theme.colors.surface, padding: 10, borderRadius: theme.radii.sm, borderWidth: 1, borderColor: theme.colors.outline, marginBottom: 12 },
-  dropdownItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: theme.colors.surfaceVariant },
-  dropdownItemText: { fontSize: 16, color: theme.colors.text },
-  dropdownItemTextSelected: { fontWeight: '700', color: theme.colors.primary }
+  searchInput: { ...theme.inputStyle, marginBottom: 12, marginTop: 0 },
+  dropdownItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: theme.colors.surfaceVariant },
+  dropdownItemText: { fontSize: theme.type.headline, color: theme.colors.text },
+  dropdownItemTextSelected: { fontWeight: '700', color: theme.colors.primary, fontSize: theme.type.headline },
 });

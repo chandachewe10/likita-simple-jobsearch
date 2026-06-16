@@ -28,6 +28,9 @@ export function useWebLayout() {
         width: 100%;
         max-width: 100%;
       }
+      input, textarea {
+        font-size: 17px !important;
+      }
     `;
     document.head.appendChild(style);
   }, []);

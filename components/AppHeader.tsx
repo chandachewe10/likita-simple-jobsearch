@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   backText: {
     color: theme.colors.primary,
     fontWeight: '600',
-    fontSize: 15,
+    fontSize: theme.type.subtitle,
     marginLeft: -2,
   },
   backPlaceholder: {
@@ -121,13 +121,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 17,
+    fontSize: theme.type.headline,
     fontWeight: '700',
     color: theme.colors.text,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: theme.type.small,
     color: theme.colors.muted,
     marginTop: 2,
     textAlign: 'center',
